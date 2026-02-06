@@ -12,7 +12,7 @@ El repositorio incluye:
 ---
 
 ## Estructura del repositorio
-
+```
 /
 ├── LICENSE              (MIT – para el código)
 ├── LICENSE-docs.txt     (CC BY-NC-SA 4.0 – documentación)
@@ -22,7 +22,7 @@ El repositorio incluye:
 └── docs/		 (documentación, guias de sesiones, etc)
     ├── sesion1/
     └── sesion2/
-
+```
 ---
 
 ## Licencia
