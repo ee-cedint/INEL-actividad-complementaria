@@ -1,6 +1,6 @@
-# Prácticas de Electrónica con Arduino
+# Actividad complementaria de INEL
 
-Repositorio docente con los materiales utilizados en las prácticas de la asignatura
+Repositorio docente con los materiales utilizados en la actividad complementaria de la asignatura
 Introducción a la electrónica (INEL) del Grado en Ingeniería de Tecnologías de Telecomunicación 
 de la Universidad Politécnica de Madrid.
 
