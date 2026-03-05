@@ -20,13 +20,16 @@ static const uint32_t SAMPLE_RATE_HZ = 2000;
 static const uint32_t OUTPUT_RATE_HZ = 1;
 
 // Output format
-static const bool OUTPUT_VOLTS = false;    // false: raw counts (0..4095), true: volts
+static const bool OUTPUT_VOLTS = true;    // false: raw counts (0..4095), true: volts
 static const float VREF_VOLTS  = 5.0f;     // typical on UNO R4
 // -------------------------------
 
 static const uint8_t CH_PINS[4] = {A0, A1, A2, A3};
 static const uint16_t ADC_BITS = 12;
 static const uint16_t ADC_MAX  = (1u << ADC_BITS) - 1; // 4095
+
+static const uint8_t D13_PIN = 13;   // D13 en UNO R4
+static bool d13_state = false;
 
 static inline float countsToVolts(float counts) {
   return counts * (VREF_VOLTS / (float)ADC_MAX);
@@ -38,14 +41,34 @@ void setup() {
 
   analogReadResolution(ADC_BITS);
 
+  pinMode(D13_PIN, OUTPUT);
+  digitalWrite(D13_PIN, LOW);
+
   // Warm-up
   (void)analogRead(CH_PINS[0]);
   (void)analogRead(CH_PINS[1]);
   (void)analogRead(CH_PINS[2]);
   (void)analogRead(CH_PINS[3]);
+
+  // Mensaje (mejor verlo en Serial Monitor)
+  Serial.println("Envia '1' (D13=HIGH), '0' (D13=LOW), 't' (toggle).");
+}
+
+void handleSerial() {
+  while (Serial.available() > 0) {
+    char c = (char)Serial.read();
+    if (c == '1') d13_state = true;
+    else if (c == '0') d13_state = false;
+    else if (c == 't' || c == 'T') d13_state = !d13_state;
+    else continue;
+
+    digitalWrite(D13_PIN, d13_state ? HIGH : LOW);
+  }
 }
 
 void loop() {
+  handleSerial();
+
   // Internal sampling cadence
   const uint32_t sample_interval_us = 1000000UL / SAMPLE_RATE_HZ;
   static uint32_t next_sample_us = micros();
