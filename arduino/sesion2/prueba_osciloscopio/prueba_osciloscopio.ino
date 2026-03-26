@@ -21,7 +21,7 @@ static const uint32_t OUTPUT_RATE_HZ = 1;
 
 // Output format
 static const bool OUTPUT_VOLTS = true;    // false: raw counts (0..4095), true: volts
-static const float VREF_VOLTS  = 5.0f;     // typical on UNO R4
+static const float VREF_VOLTS  = 4.75f;     // typical on UNO R4
 // -------------------------------
 
 static const uint8_t CH_PINS[4] = {A0, A1, A2, A3};
