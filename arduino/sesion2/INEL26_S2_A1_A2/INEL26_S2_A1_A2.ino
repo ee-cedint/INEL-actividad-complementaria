@@ -8,12 +8,14 @@
 //   A0 = Vg
 //   A1 = Vd
 //   A2 = Vcc   
+//   A3 = 
 //
 // ACTIVIDAD 2 (BJT PWM):
-//   D9 -> base
+//   D9 -> Rin -> base
 //   A0 = Vb
 //   A1 = Vc
 //   A2 = Vled o Vr
+//   A3 = Vin (Pin D9)
 //
 // COMANDOS SERIE:
 //   h        ayuda
@@ -32,7 +34,7 @@
 //   t       en modo MOSFET: siguiente PWM
 //
 // Salida periódica:
-//   A0<TAB>A1<TAB>A2
+//   A0<TAB>A1<TAB>A2<TAB>A3
 // ============================================================
 
 
@@ -69,7 +71,7 @@ static const uint32_t LED_SAMPLES_OFF = (LED_MILIS_OFF * SAMPLE_RATE_HZ) / 1000;
 
 
 // Pines analógicos
-static const uint8_t CH_PINS[3] = {A0, A1, A2};
+static const uint8_t CH_PINS[4] = {A0, A1, A2, A3};
 
 // Pines de control
 static const uint8_t MOSFET_PIN = 12;    // Actividad 1
@@ -159,7 +161,7 @@ void printHelp() {
   Serial.println(F("  e     -> PWM 100%"));
   Serial.println(F("  t     -> siguiente PWM: 0,25,50,75,100,0..."));
   Serial.println();
-  Serial.println(F("Salida: A0<TAB>A1<TAB>A2"));
+  Serial.println(F("Salida: A0<TAB>A1<TAB>A2<TAB>A3"));
   Serial.println();
 }
 
@@ -297,7 +299,7 @@ void setup() {
 #endif
 
   // Warm-up ADC
-  for (uint8_t i = 0; i < 3; i++) {
+  for (uint8_t i = 0; i < 4; i++) {
     (void)analogRead(CH_PINS[i]);
   }
 
@@ -323,6 +325,7 @@ void loop() {
   static uint32_t sum0 = 0;
   static uint32_t sum1 = 0;
   static uint32_t sum2 = 0;
+  static uint32_t sum3 = 0;
   static uint32_t n = 0;
   static uint32_t countSamples = 0; // Para el parpadeo rápido del led
 
@@ -333,6 +336,7 @@ void loop() {
     sum0 += (uint32_t)analogRead(CH_PINS[0]);
     sum1 += (uint32_t)analogRead(CH_PINS[1]);
     sum2 += (uint32_t)analogRead(CH_PINS[2]);
+    sum3 += (uint32_t)analogRead(CH_PINS[3]);
     n++;
 
     // Parpadeo Led
@@ -362,24 +366,29 @@ void loop() {
     float avg0 = (float)sum0 / (float)n;
     float avg1 = (float)sum1 / (float)n;
     float avg2 = (float)sum2 / (float)n;
+    float avg3 = (float)sum3 / (float)n;
 
     sum0 = 0;
     sum1 = 0;
     sum2 = 0;
+    sum3 = 0;
     n = 0;
 
     if (!OUTPUT_VOLTS) {
       Serial.print((int)(avg0 + 0.5f)); Serial.print('\t');
       Serial.print((int)(avg1 + 0.5f)); Serial.print('\t');
-      Serial.println((int)(avg2 + 0.5f));
+      Serial.print((int)(avg2 + 0.5f)); Serial.print('\t');
+      Serial.println((int)(avg3 + 0.5f));
     } else {
       float v0 = countsToVolts(avg0);
       float v1 = countsToVolts(avg1);
       float v2 = countsToVolts(avg2);
+      float v3 = countsToVolts(avg3);
 
       Serial.print(v0, 3); Serial.print('\t');
       Serial.print(v1, 3); Serial.print('\t');
-      Serial.println(v2, 3); 
+      Serial.print(v2, 3); Serial.print('\t'); 
+      Serial.println(v3, 3); 
     }
   }
 }
